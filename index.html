@@ -207,11 +207,12 @@
   async function onDragStart(source, piece) {
     if (game.game_over()) return false;
     if (cheatMode) return true;
-
+  
     if ((game.turn() === 'w' && piece.startsWith('b')) ||
         (game.turn() === 'b' && piece.startsWith('w'))) {
       return false;
     }
+  }
 
   async function onDrop(source, target, piece) {
     if (cheatMode) {
