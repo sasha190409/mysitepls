@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ultimate Chess with Spawning</title>
+<link rel="icon" href="/favico.ico" type="image/x-icon" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+<script src="https://www.google.com/recaptcha/api.js?render=6LcbE0MrAAAAAIJ8wdirRCfx-JNb_MAiP6bw17vY"></script>
+<style>
+  body {
+    background: #000;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  #board-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+  }
+  #board {
+    background: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  #status {
+    margin: 20px 0;
+    font-size: 1.2em;
+    text-align: center;
+  }
+  #cheat-btn, #reset-btn {
+    position: fixed;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  #cheat-btn {
+    bottom: 20px;
+    right: 20px;
+    background: #dc3545;
+  }
+  #reset-btn {
+    bottom: 20px;
+    left: 20px;
+    background: #007bff;
+  }
+  #cheat-btn.active {
+    background: #28a745;
+    box-shadow: 0 0 15px #28a745;
+  }
+  #spawner {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 10px;
+    background: #333;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 999;
+    user-select: none;
+  }
+  .spawn-group {
+    display: flex;
+    gap: 5px;
+  }
+  .spawn-btn {
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .spawn-btn.active {
+    border-color: #ff0;
+    transform: scale(1.1);
+  }
+  #promotion-menu {
+    position: fixed;
+    display: none;
+    flex-direction: row;
+    gap: 5px;
+    background: #222;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1002;
+  }
+  .promotion-piece {
+    width: 45px;
+    height: 45px;
+    background-size: cover;
+    cursor: pointer;
+  }
+  #password-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #333;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1001;
+    text-align: center;
+  }
+  #password-input {
+    padding: 8px;
+    margin: 10px 0;
+    width: 200px;
+    border-radius: 4px;
+    border: none;
+  }
+  #password-submit {
+    padding: 8px 16px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="board-container">
+  <div id="board" style="width: 600px"></div>
+</div>
+<div id="status"></div>
+<div id="promotion-menu"></div>
+<button id="reset-btn">RESET</button>
+<button id="cheat-btn">CHEAT MODE</button>
+<div id="spawner">
+  <div class="spawn-group">
+    <div class="spawn-btn" data-piece="wP" style="background-image: url(img/chesspieces/wikipedia/wP.png)"></div>
+    <div class="spawn-btn" data-piece="wR" style="background-image: url(img/chesspieces/wikipedia/wR.png)"></div>
+    <div class="spawn-btn" data-piece="wN" style="background-image: url(img/chesspieces/wikipedia/wN.png)"></div>
+    <div class="spawn-btn" data-piece="wB" style="background-image: url(img/chesspieces/wikipedia/wB.png)"></div>
+    <div class="spawn-btn" data-piece="wQ" style="background-image: url(img/chesspieces/wikipedia/wQ.png)"></div>
+    <div class="spawn-btn" data-piece="wK" style="background-image: url(img/chesspieces/wikipedia/wK.png)"></div>
+  </div>
+  <div class="spawn-group">
+    <div class="spawn-btn" data-piece="bP" style="background-image: url(img/chesspieces/wikipedia/bP.png)"></div>
+    <div class="spawn-btn" data-piece="bR" style="background-image: url(img/chesspieces/wikipedia/bR.png)"></div>
+    <div class="spawn-btn" data-piece="bN" style="background-image: url(img/chesspieces/wikipedia/bN.png)"></div>
+    <div class="spawn-btn" data-piece="bB" style="background-image: url(img/chesspieces/wikipedia/bB.png)"></div>
+    <div class="spawn-btn" data-piece="bQ" style="background-image: url(img/chesspieces/wikipedia/bQ.png)"></div>
+    <div class="spawn-btn" data-piece="bK" style="background-image: url(img/chesspieces/wikipedia/bK.png)"></div>
+  </div>
+</div>
+
+<div id="password-modal">
+  <h3>Enter Cheat Password</h3>
+  <input type="password" id="password-input" placeholder="Password" autocomplete="off" />
+  <button id="password-submit">Submit</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+(() => {
+  const boardEl = document.getElementById('board');
+  const statusEl = document.getElementById('status');
+  const cheatBtn = document.getElementById('cheat-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const spawner = document.getElementById('spawner');
+  const passwordModal = document.getElementById('password-modal');
+  const passwordInput = document.getElementById('password-input');
+  const passwordSubmit = document.getElementById('password-submit');
+  const promotionMenu = document.getElementById('promotion-menu');
+
+  const CHEAT_PASSWORD = 'letmein';
+
+  let game = new Chess();
+  let board = null;
+  let cheatMode = false;
+  let spawnSelectedPiece = null;
+
+  function updateStatus() {
+    let status = '';
+    if (game.in_checkmate()) {
+      status = `Checkmate! ${game.turn() === 'w' ? 'Black' : 'White'} wins.`;
+    } else if (game.in_draw()) {
+      status = 'Draw!';
+    } else {
+      status = `${game.turn() === 'w' ? 'White' : 'Black'} to move`;
+      if (game.in_check()) {
+        status += ', check!';
+      }
+    }
+    statusEl.textContent = status;
+  }
+
+  function verifyRecaptcha(action) {
+    return new Promise((resolve) => {
+      grecaptcha.ready(() => {
+        grecaptcha.execute('6LcbE0MrAAAAAIJ8wdirRCfx-JNb_MAiP6bw17vY', {action}).then(token => {
+          $.post('verify_recaptcha.php', {token, action}, data => {
+            resolve(data.success);
+          }, 'json').fail(() => resolve(false));
+        });
+      });
+    });
+  }
+
+  async function onDragStart(source, piece) {
+    if (game.game_over()) return false;
+    if (cheatMode) return true;
+
+    if ((game.turn() === 'w' && piece.startsWith('b')) ||
+        (game.turn() === 'b' && piece.startsWith('w'))) {
+      return false;
+    }
+
+    const verified = await verifyRecaptcha('move');
+    if (!verified) {
+      alert('reCAPTCHA verification failed. Try again.');
+      return false;
+    }
+
+    return true;
+  }
+
+  async function onDrop(source, target, piece) {
+    if (cheatMode) {
+      if (spawnSelectedPiece) {
+        game.put({type: spawnSelectedPiece[1].toLowerCase(), color: spawnSelectedPiece[0].toLowerCase()}, target);
+        spawnSelectedPiece = null;
+        board.position(game.fen());
+        updateStatus();
+      }
+      return 'snapback';
+    }
+
+    let move = game.move({
+      from: source,
+      to: target,
+      promotion: 'q'
+    });
+
+    if (move === null) return 'snapback';
+
+    if (move.flags.includes('p')) {
+      if ((move.color === 'w' && target[1] === '8') ||
+          (move.color === 'b' && target[1] === '1')) {
+        game.undo();
+        showPromotionMenu(target, move.color, source);
+        return;
+      }
+    }
+
+    board.position(game.fen());
+    updateStatus();
+  }
+
+  function onSnapEnd() {
+    board.position(game.fen());
+  }
+
+  function showPromotionMenu(square, color, from) {
+    promotionMenu.style.display = 'flex';
+    promotionMenu.style.top = '50%';
+    promotionMenu.style.left = '50%';
+    promotionMenu.style.transform = 'translate(-50%, -50%)';
+
+    promotionMenu.innerHTML = '';
+    const pieces = ['q', 'r', 'b', 'n'];
+    pieces.forEach(p => {
+      const pieceEl = document.createElement('div');
+      pieceEl.classList.add('promotion-piece');
+      pieceEl.style.backgroundImage = `url(img/chesspieces/wikipedia/${color}${p.toUpperCase()}.png)`;
+      pieceEl.title = `Promote to ${p.toUpperCase()}`;
+      pieceEl.onclick = () => {
+        game.move({from, to: square, promotion: p});
+        promotionMenu.style.display = 'none';
+        board.position(game.fen());
+        updateStatus();
+      };
+      promotionMenu.appendChild(pieceEl);
+    });
+  }
+
+  function toggleCheatMode() {
+    if (!cheatMode) {
+      passwordModal.style.display = 'block';
+      passwordInput.value = '';
+      passwordInput.focus();
+    } else {
+      cheatMode = false;
+      cheatBtn.classList.remove('active');
+      spawner.style.display = 'none';
+      updateStatus();
+    }
+  }
+
+  passwordSubmit.onclick = () => {
+    if (passwordInput.value === CHEAT_PASSWORD) {
+      cheatMode = true;
+      cheatBtn.classList.add('active');
+      spawner.style.display = 'flex';
+      passwordModal.style.display = 'none';
+      updateStatus();
+    } else {
+      alert('Wrong password!');
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+  };
+
+  cheatBtn.onclick = toggleCheatMode;
+
+  resetBtn.onclick = () => {
+    game.reset();
+    board.position(game.fen());
+    updateStatus();
+    if (cheatMode) {
+      cheatMode = false;
+      cheatBtn.classList.remove('active');
+      spawner.style.display = 'none';
+    }
+    promotionMenu.style.display = 'none';
+  };
+
+  spawner.querySelectorAll('.spawn-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (spawnSelectedPiece === btn.dataset.piece) {
+        spawnSelectedPiece = null;
+        btn.classList.remove('active');
+      } else {
+        spawnSelectedPiece = btn.dataset.piece;
+        spawner.querySelectorAll('.spawn-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    });
+  });
+
+  const config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd,
+    pieceTheme: 'img/chesspieces/wikipedia/{piece}.png'
+  };
+
+  board = Chessboard('board', config);
+  updateStatus();
+})();
+</script>
+</body>
+</html>
