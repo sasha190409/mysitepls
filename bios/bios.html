@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нафиг ты это читаешь?</title>
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            position: absolute;
+            width: 1200px;
+            height: 800px;
+            background-color: rgb(0, 26, 255);
+            border: 5px solid rgb(193, 193, 193);
+        }
+        
+        .container2 {
+            position: absolute;
+            top: 10%;
+            left: 2.5%;
+            width: 95%;
+            height: 85%;
+            background-color: rgb(193, 193, 193);
+        }
+        
+        .tab {
+            position: absolute;
+            top: 1%;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: rgb(0, 26, 255);
+            color: rgb(193, 193, 193);
+        }
+        
+        .active-tab {
+            background-color: rgb(193, 193, 193);
+            color: rgb(0, 26, 255);
+        }
+        
+        .menu-item {
+            margin-left: 30px;
+            padding: 5px;
+            width: fit-content;
+        }
+        
+        .active-item {
+            background-color: rgb(0, 26, 255);
+            color: rgb(193, 193, 193);
+        }
+        
+        .inactive-item {
+            background-color: rgb(193, 193, 193);
+            color: rgb(0, 26, 255);
+        }
+        
+        #textabout {
+            width: 100%;
+            height: 100%;
+            background-color: rgb(193, 193, 193);
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            resize: none;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="container" class="container">
+        <a id="abouttab" class="tab active-tab" style="left: 1%;">About</a>
+        <a id="thesashkintab" class="tab" style="left: 14%;">TheSashkin</a>
+        <a id="alexmotutab" class="tab" style="left: 35.5%;">AlexMotu</a>
+        <a id="friziktab" class="tab" style="right: 25%;">NotAFrizik</a>
+        <a id="cooptab" class="tab" style="right: 9%;">404Team</a>
+        
+        <div id="containerabout" class="container2">
+            <textarea id="textabout" disabled></textarea>
+        </div>
+        
+        <div id="thesashkincontainer" hidden class="container2">
+            <p id="thesashkin1" class="menu-item active-item">Windows 12 [win 10]</p>
+            <p id="thesashkin2" class="menu-item inactive-item">NEDOHACKERS Clicker [Not a virus]</p>
+        </div>
+        
+        <div id="alexmotucontainer" hidden class="container2">
+            <p id="alexmotu1" class="menu-item active-item">Antivirus [Kaspersky]</p>
+            <p id="alexmotu2" class="menu-item inactive-item">Fortnite [Donate to I114rk]</p>
+        </div>
+        
+        <div id="frizikcontainer" hidden class="container2">
+            <p id="frizik1" class="menu-item active-item">А тут ничего не было, поэтому!</p>
+        </div>
+        
+        <div id="coopcontainer" hidden class="container2">
+            <p id="coop1" class="menu-item active-item">Windows 13 [win 11]</p>
+            <p id="coop2" class="menu-item inactive-item">FATLauncher [Legacy]</p>
+            <p id="coop3" class="menu-item inactive-item">EpicGoose [Epic Games]</p>
+            <p id="coop4" class="menu-item inactive-item">Roblox [rblx]</p>
+        </div>
+    </div>
+    
+    <script>
+        const tabObjects = {
+            2: { count: 2, container: 'thesashkincontainer', tab: 'thesashkintab', prefix: 'thesashkin' },
+            3: { count: 2, container: 'alexmotucontainer', tab: 'alexmotutab', prefix: 'alexmotu' },
+            4: { count: 1, container: 'frizikcontainer', tab: 'friziktab', prefix: 'frizik' },
+            5: { count: 4, container: 'coopcontainer', tab: 'cooptab', prefix: 'coop' }
+        };
+        
+        let selectedTab = 1;
+        let currentObject = 1;
+        
+        function updateUI() {
+            // Update tabs
+            document.getElementById('abouttab').className = selectedTab === 1 ? 'tab active-tab' : 'tab';
+            document.getElementById('thesashkintab').className = selectedTab === 2 ? 'tab active-tab' : 'tab';
+            document.getElementById('alexmotutab').className = selectedTab === 3 ? 'tab active-tab' : 'tab';
+            document.getElementById('friziktab').className = selectedTab === 4 ? 'tab active-tab' : 'tab';
+            document.getElementById('cooptab').className = selectedTab === 5 ? 'tab active-tab' : 'tab';
+            
+            // Update containers visibility
+            document.getElementById('containerabout').hidden = selectedTab !== 1;
+            document.getElementById('thesashkincontainer').hidden = selectedTab !== 2;
+            document.getElementById('alexmotucontainer').hidden = selectedTab !== 3;
+            document.getElementById('frizikcontainer').hidden = selectedTab !== 4;
+            document.getElementById('coopcontainer').hidden = selectedTab !== 5;
+            
+            // Update menu items if not on About tab
+            if (selectedTab !== 1) {
+                const tabInfo = tabObjects[selectedTab];
+                
+                for (let i = 1; i <= tabInfo.count; i++) {
+                    const item = document.getElementById(`${tabInfo.prefix}${i}`);
+                    item.className = i === currentObject ? 'menu-item active-item' : 'menu-item inactive-item';
+                }
+            }
+        }
+        
+        function centerContainer() {
+            const container = document.getElementById('container');
+            container.style.left = Math.round((window.innerWidth - 1200) / 2) + 'px';
+            container.style.top = Math.round((window.innerHeight - 800) / 2) + 'px';
+        }
+        
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowRight':
+                    if (selectedTab < 5) {
+                        selectedTab++;
+                        currentObject = 1;
+                    }
+                    break;
+                    
+                case 'ArrowLeft':
+                    if (selectedTab > 1) {
+                        selectedTab--;
+                        currentObject = 1;
+                    }
+                    break;
+                    
+                case 'ArrowDown':
+                    if (selectedTab !== 1) {
+                        const tabInfo = tabObjects[selectedTab];
+                        if (currentObject < tabInfo.count) {
+                            currentObject++;
+                        }
+                    }
+                    break;
+                    
+                case 'ArrowUp':
+                    if (currentObject > 1) {
+                        currentObject--;
+                    }
+                    break;
+                    
+                case 'Enter':
+                    if (selectedTab === 2) {
+                        if (currentObject === 1) {
+                            location.href = 'https://support.microsoft.com/en-us/topic/windows-10-update-assistant-3550dfb2-a015-7765-12ea-fba2ac36fb3f';
+                        } else if (currentObject === 2) {
+                            location.href = 'https://thesashkin.github.io/nedohackers_clicker/index.html';
+                        }
+                    } else if (selectedTab === 3) {
+                        if (currentObject === 1) {
+                            location.href = 'https://www.kaspersky.ru/home-security?reseller=kl-ru_b2s-2024-lf_acq_ona_sem_bra_onl_b2c_ya_ppc-ad_______&utm_content=ppc-ad%7Cgeneric&utm_source=yandex&utm_medium=cpc&utm_campaign=Y%20-%20RU%20-%20RU%20-%20B2C%20-%20PS%20-%20Branded%20-%20RU%20-%20BG%20-%20BRO%20-%20FREE&utm_term=kaspersky%20free&utm_id=yx_cmp-67000453_adg-4735335982_ad-13062484310_kwd-34699729927_dev-desktop&yclid=11294487272577302527';
+                        } else if (currentObject === 2) {
+                            location.href = 'https://clck.ru/3CURLh';
+                        }
+                    } else if (selectedTab === 5) {
+                        if (currentObject === 1) {
+                            location.href = 'https://www.microsoft.com/en-Us/software-download/windows11';
+                        } else if (currentObject === 2) {
+                            location.href = 'https://llaun.ch/ru';
+                        } else if (currentObject === 3) {
+                            location.href = 'https://www.epicgames.com/id/login?lang=ru&noHostRedirect=true&redirectUrl=https%3A%2F%2Fstore.epicgames.com%2Fru%2F&client_id=875a3b57d3a640a6b7f9b4e883463ab4&prompt=pass_through';
+                        } else if (currentObject === 4) {
+                            location.href = 'https://web.roblox.com/home';
+                        }
+                    }
+                    break;
+            }
+            
+            updateUI();
+        });
+        
+        window.addEventListener('resize', centerContainer);
+        
+        // Initialize
+        centerContainer();
+        updateUI();
+        
+        document.getElementById('textabout').value = `
+  Site developer: TheSashkin
+  Apps developers: TheSashkin, Alexmotu, NotAFrizik
+  
+  
+  
+  Donate to TheSashkin: https://bit.ly/thesashkinDonate
+  Donate to AlexMotu: https://bit.ly/motudonate
+  Donate to NotAFrizik: https://hipolink.me/frzsupport
+  Donate to I114rk: https://clck.ru/3CURLh
+  
+  
+  
+  The site was created only with HTML, CSS, JavaScript
+  
+
+
+  !!!WARNING!!!
+  This site dont contains malicious downloads!
+  
+  !!!Внимание!!!
+  Этот сайт не содержит вредоносные загрузки!
+  
+  
+  Latest project: Roblox [404Team]
+  
+  
+  
+  
+  Made for общество by TheSashkin and I114rk`;
+    </script>
+</body>
+</html>
