@@ -168,6 +168,7 @@
   </div>
 
   <audio id="success-sound" src="https://thesashkin.github.io/nedohackers_clicker/hehesuda.mp3"></audio>
+  <audio id="fail-sound" src="https://thesashkin.github.io/nedohackers_clicker/oi_slomal.mp3"></audio>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
@@ -184,6 +185,7 @@
       const passwordSubmit = document.getElementById('password-submit');
       const promotionMenu = document.getElementById('promotion-menu');
       const successSound = document.getElementById('success-sound');
+      const failSound = document.getElementById('fail-sound');
 
       const CHEAT_PASSWORD = 'letmein';
 
@@ -274,6 +276,8 @@
           cheatMode = false;
           cheatBtn.classList.remove('active');
           spawner.style.display = 'none';
+          failSound.currentTime = 0;
+          failSound.play();
           updateStatus();
         }
       }
@@ -304,6 +308,8 @@
           cheatMode = false;
           cheatBtn.classList.remove('active');
           spawner.style.display = 'none';
+          failSound.currentTime = 0;
+          failSound.play();
         }
         promotionMenu.style.display = 'none';
       };
@@ -321,16 +327,15 @@
         });
       });
 
-      const config = {
-        draggable: true,
+      board = Chessboard(boardEl, {
         position: 'start',
+        draggable: true,
         onDragStart,
         onDrop,
         onSnapEnd,
         pieceTheme: 'img/chesspieces/wikipedia/{piece}.png'
-      };
+      });
 
-      board = Chessboard('board', config);
       updateStatus();
     })();
   </script>
