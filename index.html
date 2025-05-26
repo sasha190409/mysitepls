@@ -6,7 +6,6 @@
 <title>Ultimate Chess with Spawning</title>
 <link rel="icon" href="/favico.ico" type="image/x-icon" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
-<script src="https://www.google.com/recaptcha/api.js?render=6LcbE0MrAAAAAIJ8wdirRCfx-JNb_MAiP6bw17vY"></script>
 <style>
   body {
     background: #000;
@@ -204,17 +203,6 @@
     statusEl.textContent = status;
   }
 
-  function verifyRecaptcha(action) {
-    return new Promise((resolve) => {
-      grecaptcha.ready(() => {
-        grecaptcha.execute('6LcbE0MrAAAAAIJ8wdirRCfx-JNb_MAiP6bw17vY', {action}).then(token => {
-          $.post('verify_recaptcha.php', {token, action}, data => {
-            resolve(data.success);
-          }, 'json').fail(() => resolve(false));
-        });
-      });
-    });
-  }
 
   async function onDragStart(source, piece) {
     if (game.game_over()) return false;
@@ -224,15 +212,6 @@
         (game.turn() === 'b' && piece.startsWith('w'))) {
       return false;
     }
-
-    const verified = await verifyRecaptcha('move');
-    if (!verified) {
-      alert('reCAPTCHA verification failed. Try again.');
-      return false;
-    }
-
-    return true;
-  }
 
   async function onDrop(source, target, piece) {
     if (cheatMode) {
