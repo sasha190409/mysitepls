@@ -79,7 +79,7 @@ class WindowManager {
             { color: "red", delay: 2000 },
             { color: "green", delay: 9000 },
             { color: "blue", delay: 8000 },
-            { color: "white", delay: 27000 }, // первое появление white в 27 сек
+            { color: "white", delay: 8000 }, // первое появление white в 27 сек
             { color: "purple", delay: 4500 },
             { color: "coral", delay: 20000 },
             { color: "teal", delay: 9000 },
