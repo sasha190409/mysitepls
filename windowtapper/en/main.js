@@ -12,7 +12,7 @@ class WindowManager {
     }
 
     async initAudio() {
-        this.music = new Audio("wavetapper.mp3");
+        this.music = new Audio("../wavetapper.mp3");
         await new Promise(resolve => {
             this.music.addEventListener("canplaythrough", resolve, { once: true });
             this.music.addEventListener("error", () => resolve());
