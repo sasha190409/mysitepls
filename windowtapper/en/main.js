@@ -36,7 +36,7 @@ class WindowManager {
         await wait(delay);
         const { left, top } = this.getWindowPosition();
         const features = `width=${this.size},height=${this.size},left=${left},top=${top}`;
-        const win = window.open(`Windows/${color}.html`, `win_${color}_${Date.now()}`, features);
+        const win = window.open(`../Windows/${color}.html`, `win_${color}_${Date.now()}`, features);
         if (win) {
             this.windows.push(win);
             this.windowCount++;
